@@ -35,12 +35,15 @@ model = Sequential()
 model.add(Input((28, 28, 1)))
 model.add(Flatten())
 model.add(Dense(100, activation="relu"))
+# model.add(Dense(100, activation="relu", kernel_regularizer=keras.regularizers.L2(0.01)))
 # model.add(Dropout(0.2))
 model.add(BatchNormalization())
 model.add(Dense(10, activation="softmax"))
 
 y_train_cat = keras.utils.to_categorical(y_train, 10)
 y_test_cat = keras.utils.to_categorical(y_test, 10)
+
+print("----------------------", y_test_cat)
 
 optimizer = keras.optimizers.Adam(learning_rate=0.001)
 model.compile(
@@ -50,6 +53,8 @@ model.compile(
 x_train, x_val, y_train, y_val = train_test_split(
     x_train_scaled, y_train_cat, test_size=0.2
 )
+
+print(x_train.shape, y_train.shape)
 
 hist = model.fit(
     x_train,
