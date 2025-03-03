@@ -43,8 +43,6 @@ model.add(Dense(10, activation="softmax"))
 y_train_cat = keras.utils.to_categorical(y_train, 10)
 y_test_cat = keras.utils.to_categorical(y_test, 10)
 
-print("----------------------", y_test_cat)
-
 optimizer = keras.optimizers.Adam(learning_rate=0.001)
 model.compile(
     optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"]
@@ -53,14 +51,14 @@ model.compile(
 x_train, x_val, y_train, y_val = train_test_split(
     x_train_scaled, y_train_cat, test_size=0.2
 )
-
+np.argmax(y_train, axis=1)
 print(x_train.shape, y_train.shape)
 
 hist = model.fit(
     x_train,
     y_train,
     batch_size=30,
-    epochs=5,
+    epochs=15,
     verbose=1,
     validation_data=(x_val, y_val),
 )

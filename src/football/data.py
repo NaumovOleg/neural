@@ -4,6 +4,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+
 
 Sequential = keras.models.Sequential
 Dense = keras.layers.Dense
@@ -30,40 +33,26 @@ X_train = dataset.drop("result", axis=1)
 y_train = dataset.result
 x_train, x_test, y_train, y_test = train_test_split(X_train, y_train, random_state=42)
 
-y_train = keras.utils.to_categorical(y_train, 3)
+# y_train = keras.utils.to_categorical(y_train, 3)
 x_train, x_validate, y_train, y_validate = train_test_split(
-    x_train, y_train, random_state=42, test_size=0.2
+    x_train, y_train, random_state=42
 )
-
-
-def transform_team(team_val: int | str, encoder):
-    if isinstance(team_val, str):
-        return encoder.fit_transform([team_val])
-    return encoder.inverse_transform([team_val])
-
-
-# y_train = np.array(y_train).reshape(-1, 1)
-print("=========", x_train.shape, y_train.shape)
-
-optimiser = Adam(learning_rate=0.007)
 
 model = Sequential(
     [
         Input(shape=(x_train.shape[1],)),
-        # Flatten(),
-        Dense(30, activation="relu"),
-        # Dropout(0.1),
+        Dense(50, activation="leaky_relu"),
+        Dense(50, activation="leaky_relu"),
+        # Dense(50, activation="leaky_relu"),
+        # Dropout(0.2),
         # BatchNormalization(),
-        Dense(30, activation="relu"),
         Dense(3, activation="softmax"),
     ]
 )
 
-# model.compile(
-#     optimizer=optimiser, loss="sparse_categorical_crossentropy", metrics=["accuracy"]
-# )
+optimiser = Adam(learning_rate=0.007)
 model.compile(
-    optimizer=optimiser, loss="categorical_crossentropy", metrics=["accuracy"]
+    optimizer=optimiser, loss="sparse_categorical_crossentropy", metrics=["accuracy"]
 )
 
 hist = model.fit(
@@ -75,13 +64,16 @@ hist = model.fit(
     validation_data=(x_validate, y_validate),
 )
 
+predicted = model.predict(x_test)
+predicted = np.argmax(predicted, axis=1)
+
+cm = confusion_matrix(y_test, predicted)
+# sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+
 plt.grid()
 plt.plot(hist.history["loss"])
 plt.plot(hist.history["val_loss"])
 plt.show()
-
-predicted = model.predict(x_test)
-predicted = np.argmax(predicted, axis=1)
 
 raw_length_end = 20
 raw_length_start = 0
@@ -91,7 +83,9 @@ batch_test = np.array(y_test[raw_length_start:raw_length_end])
 
 invalid = batch_test != batch_predicted
 
+print("predicted", batch_test, end="\n")
 print("test-----", batch_predicted, end="\n\n")
-print("predicted", batch_test, end="\n\n")
-print("loss", hist.history["loss"][-1], end="\n\n")
-print("invalid", len(y_test), np.array(y_test[~(predicted == y_test)]), end="\n\n")
+print("loss", hist.history["loss"][-1], end="\n")
+mistakes = y_test[~(predicted == y_test)].tolist()
+print(f"mistakes ----> {len(mistakes)} from {len(y_test)} ", end="\n\n")
+print(mistakes)
