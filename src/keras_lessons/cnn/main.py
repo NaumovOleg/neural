@@ -62,6 +62,7 @@ model = Sequential(
     ]
 )
 
+
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
 hist = model.fit(x_train, y_train_categorical, epochs=5, verbose=1)
