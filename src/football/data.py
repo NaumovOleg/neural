@@ -1,12 +1,10 @@
 import keras
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.metrics import confusion_matrix
-
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 
 Sequential = keras.models.Sequential
 Dense = keras.layers.Dense
@@ -17,7 +15,6 @@ BatchNormalization = keras.layers.BatchNormalization
 Flatten = keras.layers.Flatten
 
 dataset = pd.read_csv("data_sets/csv/football_matches.csv")
-
 dataset.drop_duplicates(inplace=True)
 dataset.reset_index(inplace=True)
 dataset.drop(["season", "date", "X"], axis=1, inplace=True)
@@ -38,7 +35,6 @@ x_train, x_validate, y_train, y_validate = train_test_split(
     x_train, y_train, random_state=42
 )
 
-
 model = Sequential(
     [
         Input(shape=(x_train.shape[1],)),
@@ -47,7 +43,6 @@ model = Sequential(
         Dense(3, activation="softmax"),
     ]
 )
-
 
 optimiser = Adam(learning_rate=0.007)
 model.compile(
@@ -79,7 +74,6 @@ raw_length_start = 0
 
 batch_predicted = predicted[raw_length_start:raw_length_end]
 batch_test = np.array(y_test[raw_length_start:raw_length_end])
-
 invalid = batch_test != batch_predicted
 
 print("predicted", batch_test, end="\n")
