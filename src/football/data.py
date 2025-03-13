@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from keras import Sequential
 
-Sequential = keras.models.Sequential
+# Sequential = keras.models.Sequential
 Dense = keras.layers.Dense
 Dropout = keras.layers.Dropout
 Input = keras.layers.Input

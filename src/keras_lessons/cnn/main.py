@@ -2,6 +2,7 @@ import keras
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+from keras import Sequential
 
 # filters = число  ядер
 # kernel_size = размер ядра (в виде кортежа)
@@ -11,7 +12,7 @@ import matplotlib.pyplot as plt
 mnist = keras.datasets.mnist
 scaler = MinMaxScaler(feature_range=(0, 1))
 
-Sequential = keras.models.Sequential
+# Sequential = keras.models.Sequential
 Conv2D = keras.layers.Conv2D
 MaxPooling2D = keras.layers.MaxPooling2D
 Input = keras.layers.Input
