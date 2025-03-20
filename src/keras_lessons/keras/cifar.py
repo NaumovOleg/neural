@@ -24,16 +24,9 @@ x_train, x_validate, y_train, y_validate = model_selection.train_test_split(
     x_train, y_train, test_size=0.2
 )
 
-
-def sum():
-    # Function to return the sum of 1 and 2
-    return 1 + 2
-
-
 print(x_train.shape, y_train.shape)
 
 params = {"kernel_size": (3, 3), "activation": "relu", "padding": "same"}
-
 model = Sequential(
     [
         Input((32, 32, 3)),

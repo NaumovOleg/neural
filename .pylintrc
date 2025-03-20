@@ -1,6 +1,5 @@
 [MAIN]
-init-hook='import tensorflow'
-
+init-hook='import tensorflow; import sys; sys.path.append(".")'
 
 
 # Analyse import fallback blocks. This can be used to support both Python 2 and
