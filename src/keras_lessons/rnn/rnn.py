@@ -40,6 +40,7 @@ model = Sequential(
 )
 
 model.compile(loss="categorical_crossentropy", optimizer="adam")
+print(model.summary())
 history = model.fit(X, y, epochs=100)
 
 
@@ -54,20 +55,6 @@ def build_phrase(inp_string, str_len=50):
         d = tokenizer.index_word[predicted.argmax(axis=1)[0]]
         inp_string += d
     return inp_string
-
-
-# def buildPhrase(inp_str, str_len=50):
-# ]реобразуем символы в One-Hot-encoding
-
-
-#         pred = model.predict(inp)  # предсказываем OHE четвертого символа
-#         d = tokenizer.index_word[
-#             pred.argmax(axis=1)[0]
-#         ]  # получаем ответ в символьном представлении
-
-#         inp_str += d  # дописываем строку
-
-#     return inp_str
 
 
 res = build_phrase("утренн")
