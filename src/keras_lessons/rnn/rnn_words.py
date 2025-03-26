@@ -42,7 +42,8 @@ Y = to_categorical(sequences[input_words_count:], num_classes=max_words)
 model = Sequential(
     [
         Embedding(input_dim=max_words, output_dim=256),
-        SimpleRNN(2000, activation="tanh"),
+        SimpleRNN(300, activation="tanh", return_sequences=True),
+        SimpleRNN(300, activation="tanh"),
         Dense(max_words, activation="softmax"),
     ]
 )
@@ -67,7 +68,7 @@ def build_phrase(texts, str_len=20):
     return res
 
 
-res = build_phrase("позитив добавляет годы", 10)
+res = build_phrase("Чтобы я", 10)
 print(res)
 # test_data = np.array(tokenizer.texts_to_sequences(["позитив добавляет годы"]))
 # predicted = model.predict(test_data)
