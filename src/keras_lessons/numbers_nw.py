@@ -73,4 +73,3 @@ not_valid = y_test[~(predicted == y_test)]
 
 plt.plot(hist.history["loss"])
 plt.plot(hist.history["val_loss"])
-plt.show()
