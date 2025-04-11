@@ -68,7 +68,6 @@ vae = Model(input_encoder, decoder(encoder(input_encoder)), name="vae")
 
 
 def vae_loss(x, y):
-    print("====", x.shape)
     x = tf.reshape(x, shape=(batch_size, 28 * 28))
     y = tf.reshape(y, shape=(batch_size, 28 * 28))
     loss = tf.reduce_sum(tf.square(x - y), axis=-1)
