@@ -1,9 +1,9 @@
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras import models
 import keras
 from prepare_dataset import VOCDataset
 import matplotlib.pyplot as plt
-from image_actions import show_image, show_image_with_boxes
+from image_actions import show_image_with_boxes
 
 Input = keras.layers.Input
 Conv2D = keras.layers.Conv2D
@@ -21,9 +21,7 @@ MAX_OBJECTS = 2
 CLASSES = 2
 dataset = VOCDataset(DATASET_PATH)
 
-
 x_train, y_boxes, y_labels = dataset.preprocess_dataset(dataset)
-
 
 inputs = Input(shape=(224, 224, 3))
 x = Conv2D(64, 3, strides=2, padding="same", activation="relu")(inputs)
@@ -41,6 +39,7 @@ class_output = Activation("softmax", name="labels")(class_output)
 
 
 model = models.Model(inputs=inputs, outputs=[box_output, class_output])
+
 model.compile(
     optimizer="adam",
     loss={"boxes": Huber(), "labels": "sparse_categorical_crossentropy"},
@@ -48,7 +47,6 @@ model.compile(
 )
 
 history = model.fit(x_train, {"boxes": y_boxes, "labels": y_labels}, epochs=20)
-
 to_predict = x_train[20:27]
 predicted_bboxes, predicted_labels = model.predict(to_predict)
 
