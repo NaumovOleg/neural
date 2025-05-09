@@ -12,10 +12,10 @@ SimpleRNN = keras.layers.SimpleRNN
 Dropout = keras.layers.Dropout
 
 
-with open("data_sets/text.txt", "r", encoding="utf-8") as file:
+with open("data_sets/text-bad.txt", "r", encoding="utf-8") as file:
     text = file.read()
     text = text.replace("\ufeff", "")
-    text = re.sub(r"[^А-я]", "", text)
+    text = re.sub(r"[^А-я ]", "", text)
 
 num_characters = 34
 
@@ -34,7 +34,7 @@ y = data[inp_chars:]
 model = Sequential(
     [
         Input(shape=(inp_chars, num_characters)),
-        SimpleRNN(256, activation="tanh"),
+        SimpleRNN(128, activation="tanh"),
         Dense(num_characters, activation="softmax"),
     ]
 )
@@ -57,5 +57,5 @@ def build_phrase(inp_string, str_len=50):
     return inp_string
 
 
-res = build_phrase("утренн")
+res = build_phrase("утренни")
 print(res)

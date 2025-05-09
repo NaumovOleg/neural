@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.keras import models
 import keras
 from prepare_dataset import VOCDataset
 import matplotlib.pyplot as plt
@@ -38,7 +37,7 @@ class_output = Reshape((MAX_OBJECTS, CLASSES))(class_output)
 class_output = Activation("softmax", name="labels")(class_output)
 
 
-model = models.Model(inputs=inputs, outputs=[box_output, class_output])
+model = Model(inputs=inputs, outputs=[box_output, class_output])
 
 model.compile(
     optimizer="adam",
@@ -46,12 +45,15 @@ model.compile(
     metrics={"boxes": "mse", "labels": "accuracy"},
 )
 
-history = model.fit(x_train, {"boxes": y_boxes, "labels": y_labels}, epochs=20)
+history = model.fit(x_train, {"boxes": y_boxes, "labels": y_labels}, epochs=10)
 to_predict = x_train[20:27]
 predicted_bboxes, predicted_labels = model.predict(to_predict)
 
 for bboxes, img, labels in zip(predicted_bboxes, to_predict, predicted_labels):
+    print("bboxesbboxesbboxesbboxes", bboxes)
+    print("labelslabelslabelslabelslabels", labels)
     denormalized = dataset.denormalize_bboxes(bboxes)
+    print("denormalizeddenormalized", denormalized)
     show_image_with_boxes(img, denormalized, labels)
 
 

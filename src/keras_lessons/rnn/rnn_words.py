@@ -11,7 +11,7 @@ SimpleRNN = keras.layers.SimpleRNN
 Embedding = keras.layers.Embedding
 
 
-with open("data_sets/text.txt", "r", encoding="utf-8") as file:
+with open("data_sets/text-good.txt", "r", encoding="utf-8") as file:
     text = file.read()
     text = text.replace("\ufeff", "")
 
