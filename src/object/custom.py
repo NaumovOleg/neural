@@ -4,6 +4,7 @@ from prepare_dataset import VOCDataset
 import matplotlib.pyplot as plt
 from image_actions import show_image_with_boxes
 import numpy as np
+from custom_losses import iou_loss, giou_loss_batch
 
 tf.experimental.numpy.experimental_enable_numpy_behavior()
 
@@ -22,6 +23,7 @@ Lambda = keras.layers.Lambda
 MaxPooling2D = keras.layers.MaxPooling2D
 Huber = keras.losses.Huber
 CategoricalAccuracy = keras.metrics.CategoricalAccuracy
+
 
 DATASET_PATH = "data_sets/object-detecton.v2i.voc/train"
 MAX_OBJECTS = 2
@@ -75,19 +77,23 @@ def custom_loss(y_true, y_pred):
     true_classes = y_true[..., 4:]
     pred_classes = y_pred[..., 4:]
 
-    box_loss = huber_loss(true_boxes, pred_boxes)
+    result = giou_loss_batch(true_boxes, pred_boxes)
+    iou_losses = tf.reduce_mean(result)
+    tf.print("===============", iou_losses)
+
+    # box_loss = huber_loss(true_boxes, pred_boxes)
     class_loss = tf.keras.losses.categorical_crossentropy(
         true_classes, pred_classes, from_logits=True
     )
 
-    return class_loss + 10.0 * box_loss
+    return class_loss + 10.0 * iou_losses
 
 
 model.compile(
     optimizer="adam", loss=custom_loss, metrics=[CategoricalAccuracy(name="cls_acc")]
 )
 
-history = model.fit(x_train, y_train, epochs=5)
+history = model.fit(x_train, y_train, epochs=10)
 to_predict = x_train[0:4]
 predicted = model.predict(to_predict)
 
