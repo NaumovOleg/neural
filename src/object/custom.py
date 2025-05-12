@@ -6,6 +6,8 @@ from image_actions import show_image_with_boxes
 import numpy as np
 from custom_losses import giou_loss_batch
 
+tf.experimental.numpy.experimental_enable_numpy_behavior()
+
 Input = keras.layers.Input
 Conv2D = keras.layers.Conv2D
 Reshape = keras.layers.Reshape
@@ -14,6 +16,7 @@ Flatten = keras.layers.Flatten
 Concatenate = keras.layers.Concatenate
 Activation = keras.layers.Activation
 Model = keras.models.Model
+Lambda = keras.layers.Lambda
 CategoricalCrossentropy = keras.losses.CategoricalCrossentropy
 
 
@@ -37,8 +40,26 @@ x = Dense(512, activation="relu")(x)
 x = Dense(12)(x)
 x = Reshape((2, 6))(x)
 bbox_sigmoid = Activation("sigmoid")(x[..., :4])
+
 class_predictions = x[..., 4:]
-outputs = Concatenate(axis=-1)([bbox_sigmoid, class_predictions])
+
+
+def calculate_boxes(box):
+    cx = box[..., 0]
+    cy = box[..., 1]
+    w = tf.maximum(box[..., 2], 0.01)
+    h = tf.maximum(box[..., 3], 0.01)
+
+    x1 = cx - w / 2.0
+    y1 = cy - h / 2.0
+    x2 = cx + w / 2.0
+    y2 = cy + h / 2.0
+
+    return tf.stack([x1, y1, x2, y2], axis=-1)
+
+
+bbox_output = Lambda(calculate_boxes)(bbox_sigmoid)
+outputs = Concatenate(axis=-1)([bbox_output, class_predictions])
 
 model = Model(inputs=inputs, outputs=outputs)
 cross_entropy = CategoricalCrossentropy(from_logits=True)
@@ -53,20 +74,27 @@ def enforce_box_order(boxvals):
     return tf.stack([x1, y1, x2, y2], axis=-1)
 
 
+bbox_loss_weight = tf.Variable(10.0, trainable=False, dtype=tf.float32)
+
+
 @tf.function
 def custom_loss(y_true, y_pred):
 
-    true_boxes = enforce_box_order(y_true[..., :4])
-    pred_boxes = enforce_box_order(y_pred[..., :4])
-    true_classes = y_true[..., 4:]
-    pred_classes = y_pred[..., 4:]
+    true_boxes = y_true[..., :4]
+    pred_boxes = y_pred[..., :4]
+    true_classes = y_true[..., 4:6]
+    pred_classes = y_pred[..., 4:6]
 
     result = giou_loss_batch(true_boxes, pred_boxes)
     iou_losses = tf.reduce_mean(result)
 
+    # tf.debugging.assert_greater(
+    #     pred_boxes[..., 2] + pred_boxes[..., 0], 0.0, message="x2 <= x1"
+    # )
+
     class_loss = cross_entropy(true_classes, pred_classes)
 
-    return class_loss + 9.1 * iou_losses
+    return class_loss + 8.12 * iou_losses
 
 
 model.compile(optimizer="adam", loss=custom_loss, metrics=["accuracy"])
