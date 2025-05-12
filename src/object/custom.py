@@ -66,18 +66,6 @@ cross_entropy = CategoricalCrossentropy(from_logits=True)
 
 
 @tf.function
-def enforce_box_order(boxvals):
-    x1 = tf.minimum(boxvals[..., 0], boxvals[..., 2])
-    y1 = tf.minimum(boxvals[..., 1], boxvals[..., 3])
-    x2 = tf.maximum(boxvals[..., 0], boxvals[..., 2])
-    y2 = tf.maximum(boxvals[..., 1], boxvals[..., 3])
-    return tf.stack([x1, y1, x2, y2], axis=-1)
-
-
-bbox_loss_weight = tf.Variable(10.0, trainable=False, dtype=tf.float32)
-
-
-@tf.function
 def custom_loss(y_true, y_pred):
 
     true_boxes = y_true[..., :4]
@@ -87,10 +75,6 @@ def custom_loss(y_true, y_pred):
 
     result = giou_loss_batch(true_boxes, pred_boxes)
     iou_losses = tf.reduce_mean(result)
-
-    # tf.debugging.assert_greater(
-    #     pred_boxes[..., 2] + pred_boxes[..., 0], 0.0, message="x2 <= x1"
-    # )
 
     class_loss = cross_entropy(true_classes, pred_classes)
 
