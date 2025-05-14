@@ -83,7 +83,7 @@ def custom_loss(y_true, y_pred):
 
 model.compile(optimizer="adam", loss=custom_loss, metrics=["accuracy"])
 
-history = model.fit(x_train, y_train, epochs=7)
+history = model.fit(x_train[0:5], y_train[0:5], epochs=7)
 to_predict = x_train[0:4]
 predicted = model.predict(to_predict)
 

@@ -50,6 +50,7 @@ class ObjectDetector(Model):
         self.outputs = Concatenate(axis=-1)
         self.dropout = Dropout(0.2)
         self.bbox_sigmoid = Activation("sigmoid")
+
         self.cross_entropy = CategoricalCrossentropy(from_logits=True)
 
     def call(self, inputs):
@@ -78,6 +79,7 @@ class ObjectDetector(Model):
         y1 = cy - h / 2.0
         x2 = cx + w / 2.0
         y2 = cy + h / 2.0
+
         return tf.stack([x1, y1, x2, y2], axis=-1)
 
 
@@ -102,9 +104,11 @@ def compute_loss(y_true, y_pred):
 model = ObjectDetector()
 
 model.compile(optimizer="adam", loss=compute_loss, metrics=["accuracy"])
+print(model.summary())
 history = model.fit(x_train, y_train, epochs=15)
 to_predict = x_train[3:12]
 predicted = model.predict(to_predict)
+
 
 for bboxes, img in zip(predicted, to_predict):
     boxes = bboxes[:, :4]
