@@ -7,8 +7,8 @@ model = build_model(maxlen, vocab_size)
 model.summary()
 
 
-history = model.fit(X, y, epochs=20)
-model.save("./savedmodel.h5")
+history = model.fit(X, y, epochs=200)
+model.save("./saved_models/savedmodel1.h5")
 print("hi there-------->", generate_response(model, "hi there", temperature=0.8))
 print("How are you-------->", generate_response(model, "How are you", temperature=0.8))
 print(
@@ -24,3 +24,6 @@ def show_training_history():
     plt.xlabel("Epoch")
     plt.legend(["Train"], loc="upper left")
     plt.show()
+
+
+show_training_history()
