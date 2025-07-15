@@ -16,13 +16,13 @@ class CustomDense(tf.Module):
 
     def __call__(self, x):
         if not self.initialized:
-            self.w = tf.random.truncated_normal(
-                (x.shape[-1], self.units), stddev=0.1, name="w"
+            self.w = tf.Variable(
+                tf.random.truncated_normal((x.shape[-1], self.units), stddev=0.1), name="w"
             )
-            self.b = tf.zeros([self.units], dtype=tf.float32, name="b")
-
-            self.w = tf.Variable(self.w)
-            self.b = tf.Variable(self.b)
+            self.b = tf.Variable(
+                tf.zeros([self.units], dtype=tf.float32), name="b"
+            )
+            self.initialized = True
 
         if len(x.shape) == 1:
             x = tf.expand_dims(x, axis=0)

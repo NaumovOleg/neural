@@ -31,13 +31,16 @@ class SimpleModel(tf.Module):
         return vars
 
     def fit(self, X_train, y_train):
+        print("ddddddddddd")
         dummy_input = tf.expand_dims(X_train[0], axis=0)
         self.predict(dummy_input)
 
         self.optimizer = type(self.optimizer).from_config(self.optimizer.get_config())
-        self.optimizer.build(self.trainable_variables())
+        trainable_vars = self.trainable_variables()
         for n in range(self.epochs):
+            print("Epoch ----- ", n)
             loss = 0
+
             for x_batch, y_batch in zip(X_train, y_train):
                 with tf.GradientTape() as tape:
                     f_loss = cross_entropy(
@@ -45,10 +48,7 @@ class SimpleModel(tf.Module):
                     )
 
                 loss += f_loss
-                gradients = tape.gradient(f_loss, self.trainable_variables())
-                print(gradients)
-                self.optimizer.apply_gradients(
-                    zip(gradients, self.trainable_variables())
-                )
+                gradients = tape.gradient(f_loss, trainable_vars)
+                self.optimizer.apply_gradients(zip(gradients, trainable_vars))
 
             print(loss.numpy())
